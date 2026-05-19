@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+REPO=$(git rev-parse --show-toplevel)
+cd "$REPO"
+
 python3 -m venv ocean
 source ocean/bin/activate
 pip install --upgrade pip

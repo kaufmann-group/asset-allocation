@@ -7,7 +7,8 @@ import networkx as nx
 import os
 import numpy as np
 from dotenv import load_dotenv
-from src import *
+
+from modules import *
 
 load_dotenv()
 

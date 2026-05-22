@@ -1,9 +1,14 @@
 import yfinance as yf
 import numpy as np
 
-def closing_prices(assets, start="2020-01-01"):
-    closing_prices = yf.download(assets, start=start)["Close"]
-    return  closing_prices.pct_change().dropna()
+"""
+yahoo finance closing prices.
+"""
+def closing_prices(assets, start="2020-01-01", end="2026-05-20"):    
+    data = yf.download(assets, start=start, end=end)
+    
+    closing_prices = data["Close"]
+    return closing_prices.pct_change().dropna()
 
 def get_covarience(daily_returns):
     covariance_matrix = daily_returns.cov().copy()
@@ -12,13 +17,13 @@ def get_covarience(daily_returns):
     return covariance_matrix
 
 """
-Returns
+returns.
 """
 def getReturns(allocations, returns):
     return np.dot(returns, allocations)
 
 """
-Risk
+risk.
 """
 def getRisk(covariance, allocations):
     return np.transpose(allocations) @ covariance @ allocations

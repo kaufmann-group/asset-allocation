@@ -7,7 +7,7 @@ cd "$REPO"
 python3 -m venv ocean
 source ocean/bin/activate
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r $REPO/scripts/requirements.txt
 
 echo ""
 echo "Setup complete."

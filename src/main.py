@@ -1,4 +1,7 @@
-# Purdue Experimental Math Lab: Kaufmann Group
+"""
+program runs community biased asset allocation on predefined stocks.
+"""
+
 
 import numpy as np
 import pandas as pd
@@ -14,13 +17,13 @@ load_dotenv()
 
 token = os.getenv("API_TOKEN")
 
-num_partitions = 3
+num_partitions = 9
 gamma=8.0
 beta=1.0
 
 if __name__ == "__main__":
-    with open('assets.txt', 'r') as file:
-        assets = [line.strip() for line in file]
+    with open("assets.txt", "r") as file:
+        assets = [ticker for line in file if (ticker := line.split("#")[0].split("-")[0].split(" ")[0].strip())]
 
         daily_returns = closing_prices(assets=assets, start="2020-01-01")
         returns = daily_returns.mean() * 252
@@ -70,6 +73,3 @@ if __name__ == "__main__":
         allocations = np.array([x * y for x, group in zip(upper_allocations, lower_allocations) for y in group])
         for asset, allocation in zip(assets, allocations):
             print(f"{asset}: {allocation}")
-
-
-

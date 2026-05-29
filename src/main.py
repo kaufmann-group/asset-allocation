@@ -11,19 +11,19 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="Q
     returns = daily_returns.mean() * 252
     covariance_matrix = get_covariance(daily_returns=daily_returns) # should we replace this with something else? 
 
-    Graph = nx.from_numpy_array(covariance_matrix.to_numpy())
-    #draw_graph(Graph=Graph, name=".graph.png") # comment out 
+    graph = nx.from_numpy_array(covariance_matrix.to_numpy())
+    #draw_graph(graph=graph, name=".graph.png") # comment out 
 
     community_detection = CommunityDetection(adjacency_matrix=covariance_matrix, number_communities=number_communities)
     communities = community_detection.run(solver_type=solver_type)
 
     comms = {}
-    nodes = list(Graph.nodes())
+    nodes = list(graph.nodes())
     for node, c in zip(nodes, communities):
         comms.setdefault(int(c), set()).add(node)
     partitions = [group for group in comms.values() if group]
 
-    #draw_graph(Graph=Graph, name=".graph_with_communities.png", labels=communities) # comment this out
+    #draw_graph(graph=graph, name=".graph_with_communities.png", labels=communities) # comment this out
 
     group_average_returns = {}
     group_daily_returns = np.zeros((len(daily_returns), number_communities))
@@ -47,10 +47,12 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="Q
         cluster_returns = [returns.iloc[asset] for asset in cluster]
         cluster_covariance = covariance_matrix.iloc[cluster, cluster].to_numpy()
 
-        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance) # we use covariance in asset allocation? is that nessisary?  
+        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance) 
         lower_allocations.append(inner_allocation.run(solver_type=solver_type))
 
     allocations = np.array([x * y for x, group in zip(upper_allocations, lower_allocations) for y in group])
+
+    plot_allocations_and_communities(graph=graph, assets=assets, weights=allocations, communities=communities) # comment this out
 
     return allocations
 
@@ -59,7 +61,9 @@ if __name__ == "__main__":
         assets = [ticker for line in file if (ticker := line.split("#")[0].split("-")[0].split(" ")[0].strip())]
 
         daily_returns = closing_prices(assets=assets)
-        allocations = community_asset_allocation(daily_returns=daily_returns, assets=assets, number_communities=2)
+        allocations = community_asset_allocation(daily_returns=daily_returns, number_communities=2)
 
         for asset, allocation in zip(assets, allocations):
             print(f"{asset}: {allocation}")
+
+        

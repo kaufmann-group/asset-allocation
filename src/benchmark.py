@@ -26,7 +26,8 @@ def benchmark_1(assets, number_runs=200, number_communities=5):
         caa_rar.append((getRisk(covariance=cov_matrix, allocations=caa), getReturns(allocations=caa, returns=returns)))
 
         aa = AssetAllocation(returns=returns.to_numpy(), covariance=cov_matrix.to_numpy()) # asset allocation object 
-        aas = aa.run() # asset allocations 
+        aas = aa.run(solver_type = "SIMULATED") # asset allocations
+     
 
         aa_rar.append((getRisk(covariance=cov_matrix, allocations=aas), getReturns(allocations=aas, returns=returns)))
 
@@ -97,7 +98,7 @@ if __name__ == "__main__":
         plt.title("Covariance vs Correlations as Adjacency for Community Detection")
         plt.legend()
 
-        plt.savefig("../figures/benchmark_1.png", dpi=300)
+        plt.savefig("../figures/benchmark_2.png", dpi=300)
         plt.show()
 
 

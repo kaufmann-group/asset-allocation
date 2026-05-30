@@ -129,6 +129,9 @@ class Qubo(ABC):
         self.energy = best.energy
         self.sampleset = sampleset
 
+
+        # add timings here for future benchmarking 
+
         return x
 
     """

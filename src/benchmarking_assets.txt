@@ -51,13 +51,11 @@ MA                                  Mastercard Incorporated
 MS                                  Morgan Stanley
 GS                                  Goldman Sachs Group Incorporated
 WFC                                 Wells Fargo & Company
-BRK.B                               Berkshire Hathaway Incorporated
 BLK                                 BlackRock Incorporated
 AXP                                 American Express Company
 PYPL                                PayPal Holdings Incorporated
 C                                   Citigroup Incorporated
 SPGI                                S&P Global Incorporated
-MMC                                 Marsh & McLennan Companies
 SCHW                                Charles Schwab Corporation
 
 ------------ Healthcare & Pharmaceuticals ------------

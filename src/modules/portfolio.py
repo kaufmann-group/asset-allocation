@@ -5,7 +5,7 @@ import numpy as np
 yahoo finance closing prices
 """
 def closing_prices(assets, start="2020-01-01", end="2026-05-20"):    
-    data = yf.download(assets, start=start, end=end)
+    data = yf.download(assets, start=start, end=end) # needs numpy array? 
     
     closing_prices = data["Close"]
     return closing_prices.pct_change().dropna()

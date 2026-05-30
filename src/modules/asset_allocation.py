@@ -2,6 +2,9 @@ import numpy as np
 from .qubo import *
 
 class AssetAllocation(Qubo):
+    """
+    takes 
+    """
     def __init__(self, returns, covariance, p=0.1, lambda_3=10, bits_per_asset=6):
         super().__init__()
         self.returns = np.array(returns)

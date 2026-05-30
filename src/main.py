@@ -7,41 +7,47 @@ import networkx as nx
 
 from modules import *
 
-def community_asset_allocation(daily_returns, number_communities, solver_type="QPU", gamma=8.0, beta=1.0):
-    returns = daily_returns.mean() * 252
-    covariance_matrix = get_covariance(daily_returns=daily_returns) # should we replace this with something else? 
+gamma = 8.0
+beta = 1.0
+
+def community_asset_allocation(daily_returns, number_communities, solver_type="SIMULATED", adjacency=get_covariance):
+    returns = daily_returns.mean() * 252 # array: (num_assets,), multiply by 252 to annualize
+
+    covariance_matrix = adjacency(daily_returns=daily_returns) # array: (num_assets, num_assets)
 
     graph = nx.from_numpy_array(covariance_matrix.to_numpy())
-    #draw_graph(graph=graph, name=".graph.png") # comment out 
+    #draw_graph(graph=graph, name=".graph.png")
 
     community_detection = CommunityDetection(adjacency_matrix=covariance_matrix, number_communities=number_communities)
-    communities = community_detection.run(solver_type=solver_type)
+    communities = community_detection.run(solver_type=solver_type) # array: (num_assets,)
 
-    comms = {}
-    nodes = list(graph.nodes())
-    for node, c in zip(nodes, communities):
-        comms.setdefault(int(c), set()).add(node)
-    partitions = [group for group in comms.values() if group]
+    partitions = [set(np.where(communities == c)[0]) for c in np.unique(communities)] # array of sets of the partitions
 
-    #draw_graph(graph=graph, name=".graph_with_communities.png", labels=communities) # comment this out
+    #draw_graph(graph=graph, name=".graph_with_communities.png", labels=communities)
 
-    group_average_returns = {}
-    group_daily_returns = np.zeros((len(daily_returns), number_communities))
+    group_average_returns = {} # stores the expected return of each community
 
+    # note that group_daily_returns creates a time series of returns for each community
+    group_daily_returns = np.zeros((len(daily_returns), number_communities)) # array: (number of daily_returns, number_communities)
+
+    """
+    note this converts each community/partition into a single "asset" by computing its average annual return and
+    its daily return time series then partition_covariance_matrix computes the covariance
+    """
     for group_index, asset_group in enumerate(partitions):
         asset_group = list(asset_group)
 
         group_average_returns[group_index] = returns.iloc[asset_group].mean()
         group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy()
 
-    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False)
+    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) # covariance of each partition
 
     upper_allocation = AssetAllocation(returns=list(group_average_returns.values()), covariance=partition_covariance_matrix)
     upper_allocations = upper_allocation.run(solver_type=solver_type)
 
     lower_allocations = []
 
-    for i, cluster in enumerate(partitions):
+    for _, cluster in enumerate(partitions):
         cluster = list(cluster)
 
         cluster_returns = [returns.iloc[asset] for asset in cluster]
@@ -52,7 +58,7 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="Q
 
     allocations = np.array([x * y for x, group in zip(upper_allocations, lower_allocations) for y in group])
 
-    plot_allocations_and_communities(graph=graph, assets=assets, weights=allocations, communities=communities) # comment this out
+    # plot_allocations_and_communities(graph=graph, assets=assets, weights=allocations, communities=communities)
 
     return allocations
 

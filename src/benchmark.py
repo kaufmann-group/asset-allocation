@@ -4,6 +4,7 @@ benchmarking community biased asset allocation.
 
 from tqdm import tqdm
 
+import numpy as np
 from modules import *
 from main import community_asset_allocation
 
@@ -19,6 +20,7 @@ def benchmark_1(assets, number_runs=200, number_communities=5):
 
     caa_rar = [] # community asset allocation risk and returns
     aa_rar = [] # asset allocation risk and returns
+    sharpe_ratios = [] # sharpe ratios
 
     for _ in tqdm(range(number_runs)):
         caa = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities) # community asset allocations
@@ -31,7 +33,9 @@ def benchmark_1(assets, number_runs=200, number_communities=5):
 
         aa_rar.append((getRisk(covariance=cov_matrix, allocations=aas), getReturns(allocations=aas, returns=returns)))
 
-    return aa_rar, caa_rar
+        sharpe_ratios.append((getSharpeRatio(allocations=caa, returns=returns, covariance=cov_matrix), getSharpeRatio(allocations=aas, returns=returns, covariance=cov_matrix)))
+
+    return aa_rar, caa_rar, sharpe_ratios
 
 """
 this test runs community asset allocation 
@@ -61,45 +65,62 @@ test diversification
 
 
 if __name__ == "__main__":
-    with open("benchmarking_assets.txt", "r") as file:
-        total_assets = [ticker for line in file if (ticker := line.split("#")[0].split("-")[0].split(" ")[0].strip())]
+    assets_dict = parse_assets_file("benchmarking_assets.txt")
+    choose = lambda area, n : np.random.choice(assets_dict[area], n, replace=False).tolist()
 
-        random_indices = np.random.choice(len(total_assets), size=20, replace=False)
-        assets = [total_assets[i] for i in random_indices]
+    assets = choose("Technology & Semiconductors", 5) + choose("Communication Services & Media", 5) + choose("Consumer Discretionary & Retail", 5) + choose("Industrials, Energy & Utilities", 5)
+    
+    """
+    first benchmarking test
+    """
+    plt.style.use("seaborn-v0_8-whitegrid") 
+    figure_1, axes = plt.subplots(1, 2, figsize=(12, 5))
+    figure_1.suptitle("Asset Allocation vs Community Based Asset Allocation", fontsize=14, y=1.00)
 
-        """
-        first benchmarking test
-        """
+    asset_allocations, community_asset_allocations, sharpe_ratios = benchmark_1(assets=assets, number_communities=3)
 
-        asset_allocations, community_asset_allocations = benchmark_1(assets=assets, number_communities=3) # three communities
+    axes[0].plot(*zip(*asset_allocations), "bs", markersize=5, label="Without Communities")
+    axes[0].plot(*zip(*community_asset_allocations), "r^", markersize=6, label="With Communities")
 
-        plt.plot(*zip(*asset_allocations), "bo", label="without communities")
-        plt.plot(*zip(*community_asset_allocations), "ro", label="with communities")
+    axes[0].set_xlabel("Risk", fontsize=11)
+    axes[0].set_ylabel("Return", fontsize=11)
+    axes[0].set_title("Risk vs Returns", fontsize=12)
+    axes[0].legend(frameon=True, facecolor="white", edgecolor="none")
+    axes[0].grid(True, linestyle="--", alpha=0.6)
 
-        plt.xlabel("Risk") 
-        plt.ylabel("Return")
-        plt.title("Regular Asset Allocations vs Community Based Asset Allocation")
-        plt.legend()
+    axes[1].plot(*zip(*sharpe_ratios), "r*", label="Sharpe Comparison")
+    axes[1].axline((0, 0), (1, 1), color="k", linestyle=":", linewidth=1, transform=axes[1].transAxes)
 
-        plt.savefig("../figures/benchmark_1.png", dpi=300)
-        plt.show()
+    axes[1].set_xlabel("Sharpe Ratio: Community Algorithm", fontsize=11)
+    axes[1].set_ylabel("Sharpe Ratio: Asset Allocation", fontsize=11)
+    axes[1].set_title("Sharpe Ratios for Both Algorithms", fontsize=12)
+    axes[1].legend(frameon=True, facecolor="white", edgecolor="none")
+    axes[1].grid(True, linestyle="--", alpha=0.6)
 
-        """
-        second benchmarking test
-        """
+    plt.tight_layout()
+    plt.savefig("../figures/benchmark_1.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
-        community_asset_allocation_with_correlations, community_asset_allocation_with_covariance = benchmark_2(assets=assets, number_communities=3)
+    """
+    second benchmarking test
+    """
+    community_asset_allocation_with_correlations, community_asset_allocation_with_covariance = benchmark_2(assets=assets, number_communities=3)
 
-        plt.plot(*zip(*community_asset_allocation_with_correlations), "bo", label="correlations graph")
-        plt.plot(*zip(*community_asset_allocation_with_covariance), "ro", label="covariance graph")
+    figure_2, ax = plt.subplots(figsize=(7, 5))
 
-        plt.xlabel("Risk") 
-        plt.ylabel("Return")
-        plt.title("Covariance vs Correlations as Adjacency for Community Detection")
-        plt.legend()
+    ax.plot(*zip(*community_asset_allocation_with_correlations), "bo", markersize=5, label="Correlations Graph")
+    ax.plot(*zip(*community_asset_allocation_with_covariance), "ro", markersize=5, label="Covariance Graph")
 
-        plt.savefig("../figures/benchmark_2.png", dpi=300)
-        plt.show()
+    ax.set_xlabel("Risk", fontsize=11) 
+    ax.set_ylabel("Return", fontsize=11)
+    ax.set_title("Covariance vs Correlations as Adjacency for Community Detection", fontsize=12)
+
+    ax.legend(frameon=True, facecolor="white", edgecolor="none")
+    ax.grid(True, linestyle="--", alpha=0.6)
+
+    plt.tight_layout()
+    plt.savefig("../figures/benchmark_2.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
 
 

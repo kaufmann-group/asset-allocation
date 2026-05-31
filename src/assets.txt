@@ -7,14 +7,14 @@ TSLA                                Tesla IncorporatedSLA
 NVDA                                NVIDIA Corporation
 JPM                                 JPMorgan Chase & Company
 V                                   Visa Incorporated
-JNJ                                 Johnson & Johnson
-WMT                                 Walmart Incorporated
-PG                                  Procter & Gamble Company
-MA                                  Mastercard Incorporated
-DIS                                 The Walt Disney Company
-HD                                  Home Depot Incorporated
-BAC                                 Bank of America Corp
-VZ                                  Verizon Communications
-ADBE                                Adobe Incorporated
-CMCSA                               Comcast Corporation
-NFLX                                Netflix Incorporated
+CAT                                 Caterpillar Incorporated
+GE                                  GE Aerospace
+UNP                                 Union Pacific Corporation
+HON                                 Honeywell International
+NEE                                 NextEra Energy Incorporated
+TJX                                 TJX Companies Incorporated
+BKNG                                Booking Holdings Incorporated
+CMG                                 Chipotle Mexican Grill
+MAR                                 Marriott International
+BLK                                 BlackRock Incorporated
+AXP                                 American Express Company

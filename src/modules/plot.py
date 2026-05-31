@@ -6,7 +6,7 @@ from matplotlib import colormaps
 """
 draws graph of communities
 """
-def draw_graph(graph, name, labels=None):
+def draw_graph(graph, name=None, labels=None):
     pos = nx.spring_layout(graph, seed=7)
     cmap = colormaps["tab10"]
 
@@ -25,7 +25,8 @@ def draw_graph(graph, name, labels=None):
 
     plt.title("graph")
     plt.axis("off")
-    plt.savefig(name, dpi=300)
+    if name is not None:
+        plt.savefig(name, dpi=300)
     plt.show()
 
 """
@@ -41,7 +42,7 @@ def plot_allocations_and_communities(graph, assets, weights, communities):
 
     unique_communities = sorted(np.unique(communities))
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={"width_ratios": [1.15, 1]})
+    _, axes = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={"width_ratios": [1.15, 1]})
 
     ax_bar, ax_graph = axes
 

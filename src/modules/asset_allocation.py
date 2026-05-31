@@ -5,14 +5,14 @@ class AssetAllocation(Qubo):
     """
     takes 
     """
-    def __init__(self, returns, covariance, p=0.1, lambda_3=10, bits_per_asset=6):
+    def __init__(self, returns, covariance, p=0.22, lambda_1=10.0, lambda_2=10.0, lambda_3=10.0, bits_per_asset=6):
         super().__init__()
         self.returns = np.array(returns)
         self.covariance = np.array(covariance)
         self.p = p
         self.lambda_3 = lambda_3
-        self.lambda_1 = self.p ** -2 # convention in paper
-        self.lambda_2 = 1.0 # convention in paper
+        self.lambda_1 = lambda_1 # convention in paper
+        self.lambda_2 = lambda_2 # convention in paper
         self.bits_per_asset = bits_per_asset
 
     """

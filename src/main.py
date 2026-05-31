@@ -38,13 +38,14 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         asset_group = list(asset_group)
 
         group_average_returns[group_index] = returns.iloc[asset_group].mean()
-        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy() * 252 # annualize
+        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy() # annualize
 
-    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) # covariance of each partition
+    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) * 252 # covariance of each partition
 
-    upper_allocation = AssetAllocation(returns=list(group_average_returns.values()), covariance=partition_covariance_matrix)
+    upper_returns = np.array(list(group_average_returns.values()))
+    upper_allocation = AssetAllocation(returns=upper_returns, covariance=partition_covariance_matrix, p=upper_returns.mean(), lambda_1=10.0, lambda_2=50.0, lambda_3=10.0)
+    
     upper_allocations = upper_allocation.run(solver_type=solver_type)
-
     lower_allocations = []
 
     for _, cluster in enumerate(partitions):
@@ -56,7 +57,12 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance) 
         lower_allocations.append(inner_allocation.run(solver_type=solver_type))
 
-    allocations = np.array([x * y for x, group in zip(upper_allocations, lower_allocations) for y in group])
+    allocations = np.zeros(len(returns))
+    for group_weight, cluster, inner_weights in zip(upper_allocations, partitions, lower_allocations):
+        cluster = list(cluster)
+
+        for asset_idx, inner_weight in zip(cluster, inner_weights):
+            allocations[asset_idx] = group_weight * inner_weight
 
     # plot_allocations_and_communities(graph=graph, assets=assets, weights=allocations, communities=communities)
 

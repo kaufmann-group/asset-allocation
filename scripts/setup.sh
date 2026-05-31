@@ -10,6 +10,9 @@ source "$REPO/ocean/bin/activate"
 pip install --upgrade pip
 pip install -r "$REPO/scripts/requirements.txt"
 
+python -m ipykernel install --user --name=repo-env --display-name "Asset Allocation Repository Environment"
+
+
 echo ""
 echo "Setup complete."
 echo "Activate the environment from the project root with:"

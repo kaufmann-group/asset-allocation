@@ -67,7 +67,7 @@ if __name__ == "__main__":
         assets = [ticker for line in file if (ticker := line.split("#")[0].split("-")[0].split(" ")[0].strip())]
 
         daily_returns = closing_prices(assets=assets)
-        allocations = community_asset_allocation(daily_returns=daily_returns, number_communities=2)
+        allocations = community_asset_allocation(daily_returns=daily_returns, number_communities=4)
 
         for asset, allocation in zip(assets, allocations):
             print(f"{asset}: {allocation}")

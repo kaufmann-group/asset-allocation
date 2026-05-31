@@ -38,7 +38,7 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         asset_group = list(asset_group)
 
         group_average_returns[group_index] = returns.iloc[asset_group].mean()
-        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy()
+        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy() * 252 # annualize
 
     partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) # covariance of each partition
 

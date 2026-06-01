@@ -36,27 +36,50 @@ def get_correlation(daily_returns, positive_correlation_communities=False, zero_
 """
 returns
 """
-def getReturns(allocations, returns):
+def get_returns(allocations, returns):
     return np.dot(returns, allocations)
 
 """
 risk
 """
-def getRisk(covariance, allocations):
+def get_risk(covariance, allocations):
     return np.transpose(allocations) @ covariance @ allocations
 
 """
 sharpe ratio
 """
-def getSharpeRatio(allocations, returns, covariance, risk_free_rate=0.0):
-    port_return = getReturns(allocations, returns)
+def get_sharpe_ratio(allocations, returns, covariance, risk_free_rate=0.0):
+    port_return = get_returns(allocations, returns)
     
-    port_variance = getRisk(covariance, allocations)
+    port_variance = get_risk(covariance, allocations)
     port_standard_deviation = np.sqrt(port_variance)
-    
-    sharpe_ratio = (port_return - risk_free_rate) / port_standard_deviation
-    
-    return sharpe_ratio
+
+    if port_standard_deviation == 0 or np.isnan(port_standard_deviation):
+        return np.nan
+    else:
+        return (port_return - risk_free_rate) / port_standard_deviation
+
+"""
+calculates the Herfindahl-Hirschman Index for diversification
+"""
+def get_hhi(weights):
+    return np.linalg.norm(weights) ** 2
+
+"""
+calculates diversification ratio
+"""
+
+def get_diversification_ratio(weights, covariance):
+    asset_vols = np.sqrt(np.diag(covariance))
+    weighted_avg_vol = weights @ asset_vols
+
+    portfolio_var = weights @ covariance @ weights
+    portfolio_vol = np.sqrt(portfolio_var)
+
+    if portfolio_vol == 0 or np.isnan(portfolio_vol):
+        return np.nan
+    else:
+        return weighted_avg_vol / portfolio_vol
 
 """
 parses assets text file

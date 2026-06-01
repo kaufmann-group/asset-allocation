@@ -17,7 +17,7 @@ class AssetAllocation(Qubo):
     """
     builds asset allocation upper triangular qubo
     """
-    def build_qubo(self):
+    def build_qubo(self): # does this even optimize for diversification??? which term does even??? ... ask bhavya 
         mu = self.returns
         C = self.covariance
 

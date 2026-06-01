@@ -36,7 +36,7 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
 
     partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) * 252 
 
-    upper_returns = np.array(list(group_average_returns.values()))
+    upper_returns = np.array(list(group_average_returns.values())) # note that upper community returns are computed as equal-weight community returns what to do abt this ????
     upper_allocation = AssetAllocation(returns=upper_returns, covariance=partition_covariance_matrix, lambda_1=lambda_1, lambda_3=lambda_3)
     upper_allocations = upper_allocation.run(solver_type=solver_type)
 
@@ -48,7 +48,7 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         cluster_returns = [returns.iloc[asset] for asset in cluster]
         cluster_covariance = covariance_matrix.iloc[cluster, cluster].to_numpy()
 
-        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance) 
+        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance, lambda_1=lambda_1, lambda_3=lambda_3) 
         lower_allocations.append(inner_allocation.run(solver_type=solver_type))
 
     allocations = np.zeros(len(returns))

@@ -1,6 +1,6 @@
 import numpy as np
 from tqdm import tqdm
-from matplotlib.pyplot import plt
+import matplotlib.pyplot as plt
 
 import sys
 sys.path.append("..")
@@ -54,5 +54,5 @@ if __name__ == "__main__":
     ax.grid(True, linestyle="--", alpha=0.6)
 
     plt.tight_layout()
-    plt.savefig("../../figures/benchmark_2.png", dpi=300, bbox_inches="tight")
+    plt.savefig("../../figures/adjacency_benchmark.png", dpi=300, bbox_inches="tight")
     plt.show()

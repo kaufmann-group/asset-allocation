@@ -1,6 +1,6 @@
 import numpy as np
 from tqdm import tqdm
-from matplotlib.pyplot import plt
+import matplotlib.pyplot as plt
 
 import sys
 sys.path.append("..")

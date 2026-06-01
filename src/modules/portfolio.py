@@ -5,7 +5,7 @@ import pandas as pd
 """
 yahoo finance closing prices
 """
-def closing_prices(assets, start="2020-01-01", end="2026-05-20"):    
+def closing_prices(assets, start="2025-04-04", end="2026-04-04"):    
     data = yf.download(assets, start=start, end=end) # needs numpy array? 
     
     closing_prices = data["Close"]
@@ -14,18 +14,24 @@ def closing_prices(assets, start="2020-01-01", end="2026-05-20"):
 """
 gets covariance matrix from daily returns
 """
-def get_covariance(daily_returns):
-    covariance_matrix = daily_returns.cov()
+def get_covariance(daily_returns, annualize=False, zero_diagonal=False):
+    covariance_matrix = daily_returns.cov() * (252 if annualize else 1)
     
-    diagonal_mask = pd.DataFrame( np.eye(covariance_matrix.shape[0], dtype=bool), index=covariance_matrix.index, columns=covariance_matrix.columns )
-    covariance_matrix = covariance_matrix.mask(diagonal_mask, 0)
+    if zero_diagonal:
+        diagonal_mask = pd.DataFrame(np.eye(covariance_matrix.shape[0], dtype=bool), index=covariance_matrix.index, columns=covariance_matrix.columns)
+        covariance_matrix = covariance_matrix.mask(diagonal_mask, 0)
     
     return covariance_matrix
 """
 gets correlation matrix from daily returns
 """
-def get_correlation(daily_returns):
-    return daily_returns.corr().abs()
+def get_correlation(daily_returns, positive_correlation_communities=False, zero_diagonal=False):
+    corr = daily_returns.corr().clip(lower=0) if positive_correlation_communities else daily_returns.corr().abs()
+
+    if zero_diagonal:
+        np.fill_diagonal(corr.values, 0.0)
+
+    return corr
 
 """
 returns

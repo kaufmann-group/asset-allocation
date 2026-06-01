@@ -16,7 +16,7 @@ def benchmark_1(assets, number_runs=200, number_communities=5):
     daily_returns = closing_prices(assets=assets)
 
     returns = daily_returns.mean() * 252 # returns
-    cov_matrix = get_covariance(daily_returns=daily_returns) # covariance matrix
+    cov_matrix = get_covariance(daily_returns=daily_returns, annualize=True) # covariance matrix
 
     caa_rar = [] # community asset allocation risk and returns
     aa_rar = [] # asset allocation risk and returns

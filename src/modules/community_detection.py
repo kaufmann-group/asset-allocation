@@ -55,7 +55,7 @@ class CommunityDetection(Qubo):
         return Q
 
     """
-    outputs communities of each asset  
+    decodes solution with one hot encoding  
     """
     def decode_solution(self, x):
         n = self.adjacency_matrix.shape[0]

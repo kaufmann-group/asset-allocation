@@ -50,8 +50,8 @@ def benchmark_2(assets, number_runs=200, number_communities=5):
     corr_rar = []
 
     for _ in tqdm(range(number_runs)):
-        caa = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities)
-        corr = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities)
+        caa = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities, adjacency=get_covariance)
+        corr = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities, adjacency=get_correlation)
 
         cov_rar.append((getRisk(covariance=cov_matrix, allocations=caa), getReturns(allocations=caa, returns=returns)))
         corr_rar.append((getRisk(covariance=cov_matrix, allocations=corr), getReturns(allocations=corr, returns=returns)))

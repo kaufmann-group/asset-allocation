@@ -10,7 +10,7 @@ from main import community_asset_allocation
 
 if __name__ == "__main__":
 
-    number_runs=200
+    number_runs=250
     number_communities=5
 
     assets_dict = parse_assets_file("benchmarking_assets.txt")
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     figure_1, axes = plt.subplots(1, 2, figsize=(12, 5))
     figure_1.suptitle("Asset Allocation vs Community Based Asset Allocation", fontsize=14, y=1.00)
 
-    axes[0].plot(*zip(*aa_rar), "bs", markersize=5, label="Without Communities")
-    axes[0].plot(*zip(*caa_rar), "r^", markersize=6, label="With Communities")
+    axes[0].plot(*zip(*aa_rar), "bs", markersize=5, label="Asset Allocation")
+    axes[0].plot(*zip(*caa_rar), "r^", markersize=6, label="Community Asset Allocation")
 
     axes[0].set_xlabel("Risk", fontsize=11)
     axes[0].set_ylabel("Return", fontsize=11)
@@ -64,9 +64,9 @@ if __name__ == "__main__":
     axes[1].plot(*zip(*sharpe_ratios), "r*", label="Sharpe Comparison")
     axes[1].axline((0, 0), (1, 1), color="k", linestyle=":", linewidth=1, transform=axes[1].transAxes)
 
-    axes[1].set_xlabel("Sharpe Ratio: Community Algorithm", fontsize=11)
+    axes[1].set_xlabel("Sharpe Ratio: Community Asset Allocation", fontsize=11)
     axes[1].set_ylabel("Sharpe Ratio: Asset Allocation", fontsize=11)
-    axes[1].set_title("Sharpe Ratios for Both Algorithms", fontsize=12)
+    axes[1].set_title("Sharpe Ratios Comparison", fontsize=12)
     axes[1].legend(frameon=True, facecolor="white", edgecolor="none")
     axes[1].grid(True, linestyle="--", alpha=0.6)
 

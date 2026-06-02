@@ -3,23 +3,22 @@ from .qubo import *
 
 class AssetAllocation(Qubo):
     """
-    takes 
+    takes returns and covariance
     """
-    def __init__(self, returns, covariance, p=0.22, lambda_1=10.0, lambda_2=10.0, lambda_3=10.0, bits_per_asset=6):
+    def __init__(self, returns, covariance, lambda_1=1.0, lambda_2=50.0, lambda_3=10.0, bits_per_asset=6):
         super().__init__()
         self.returns = np.array(returns)
         self.covariance = np.array(covariance)
-        self.p = p
-        self.lambda_3 = lambda_3
-        self.lambda_1 = lambda_1 # convention in paper
-        self.lambda_2 = lambda_2 # convention in paper
+        self.lambda_1 = lambda_1 # return reward strength - makes the optimizer chase return more aggressively
+        self.lambda_2 = lambda_2 # budget constraint strength - forces the raw decoded weights to sum close to 1
+        self.lambda_3 = lambda_3 # risk penalty strength - makes the optimizer avoid risky or high variance/covariance allocations
         self.bits_per_asset = bits_per_asset
 
     """
     builds asset allocation upper triangular qubo
     """
-    def build_qubo(self):
-        mu = self.returns        
+    def build_qubo(self): # does this even optimize for diversification??? which term does even??? ... ask bhavya 
+        mu = self.returns
         C = self.covariance
 
         n = len(mu)
@@ -44,24 +43,26 @@ class AssetAllocation(Qubo):
                 j = asset_idx[v]
                 a_v = bit_weights[v]
 
-                return_quad = self.lambda_1 * mu[i] * mu[j] * a_u * a_v
-                budget_quad = self.lambda_2 * a_u * a_v
                 variance_quad = self.lambda_3 * C[i, j] * a_u * a_v
 
-                coeff = return_quad + budget_quad + variance_quad
+                budget_quad = self.lambda_2 * a_u * a_v
+
+                coeff = variance_quad + budget_quad
 
                 if u == v:
-                    return_lin = -2.0 * self.lambda_1 * self.p * mu[i] * a_u
+                    return_lin = -self.lambda_1 * mu[i] * a_u
+
                     budget_lin = -2.0 * self.lambda_2 * a_u
 
                     Q[u, u] = coeff + return_lin + budget_lin
+
                 else:
                     Q[u, v] = 2.0 * coeff
 
         return Q
     
     """
-    decodes solution with one hot scheme
+    decodes solution with fixed point binary encoding
     """
     def decode_solution(self, x):
         n = len(self.returns)

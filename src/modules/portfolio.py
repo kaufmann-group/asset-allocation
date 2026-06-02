@@ -5,7 +5,7 @@ import pandas as pd
 """
 yahoo finance closing prices
 """
-def closing_prices(assets, start="2020-01-01", end="2026-05-20"):    
+def closing_prices(assets, start="2025-04-04", end="2026-04-04"):    
     data = yf.download(assets, start=start, end=end) # needs numpy array? 
     
     closing_prices = data["Close"]
@@ -14,43 +14,72 @@ def closing_prices(assets, start="2020-01-01", end="2026-05-20"):
 """
 gets covariance matrix from daily returns
 """
-def get_covariance(daily_returns):
-    covariance_matrix = daily_returns.cov()
+def get_covariance(daily_returns, annualize=False, zero_diagonal=False):
+    covariance_matrix = daily_returns.cov() * (252 if annualize else 1)
     
-    diagonal_mask = pd.DataFrame( np.eye(covariance_matrix.shape[0], dtype=bool), index=covariance_matrix.index, columns=covariance_matrix.columns )
-    covariance_matrix = covariance_matrix.mask(diagonal_mask, 0)
+    if zero_diagonal:
+        diagonal_mask = pd.DataFrame(np.eye(covariance_matrix.shape[0], dtype=bool), index=covariance_matrix.index, columns=covariance_matrix.columns)
+        covariance_matrix = covariance_matrix.mask(diagonal_mask, 0)
     
     return covariance_matrix
 """
 gets correlation matrix from daily returns
 """
-def get_correlation(daily_returns):
-    return daily_returns.corr().abs()
+def get_correlation(daily_returns, positive_correlation_communities=False, zero_diagonal=False):
+    corr = daily_returns.corr().clip(lower=0) if positive_correlation_communities else daily_returns.corr().abs()
+
+    if zero_diagonal:
+        np.fill_diagonal(corr.values, 0.0)
+
+    return corr
 
 """
 returns
 """
-def getReturns(allocations, returns):
+def get_returns(allocations, returns):
     return np.dot(returns, allocations)
 
 """
 risk
 """
-def getRisk(covariance, allocations):
+def get_risk(covariance, allocations):
     return np.transpose(allocations) @ covariance @ allocations
 
 """
 sharpe ratio
 """
-def getSharpeRatio(allocations, returns, covariance, risk_free_rate=0.0):
-    port_return = getReturns(allocations, returns)
+def get_sharpe_ratio(allocations, returns, covariance, risk_free_rate=0.0):
+    port_return = get_returns(allocations, returns)
     
-    port_variance = getRisk(covariance, allocations)
+    port_variance = get_risk(covariance, allocations)
     port_standard_deviation = np.sqrt(port_variance)
-    
-    sharpe_ratio = (port_return - risk_free_rate) / port_standard_deviation
-    
-    return sharpe_ratio
+
+    if port_standard_deviation == 0 or np.isnan(port_standard_deviation):
+        return np.nan
+    else:
+        return (port_return - risk_free_rate) / port_standard_deviation
+
+"""
+calculates the Herfindahl-Hirschman Index for diversification
+"""
+def get_hhi(weights):
+    return np.linalg.norm(weights) ** 2
+
+"""
+calculates diversification ratio
+"""
+
+def get_diversification_ratio(weights, covariance):
+    asset_vols = np.sqrt(np.diag(covariance))
+    weighted_avg_vol = weights @ asset_vols
+
+    portfolio_var = weights @ covariance @ weights
+    portfolio_vol = np.sqrt(portfolio_var)
+
+    if portfolio_vol == 0 or np.isnan(portfolio_vol):
+        return np.nan
+    else:
+        return weighted_avg_vol / portfolio_vol
 
 """
 parses assets text file

@@ -12,13 +12,7 @@ This project combines both of these ideas into a two-level hierarchical portfoli
 
 ## Set-Up:
 
-First pull the repo in some directory you are conformatble working in.
-
-``` 
-git clone https://github.com/dhruvupreti05/Asset-Allocation.git
-```
-
-Note that the setup file works only for Unix machines, windowsOS users must create a virtual environment and install the libraries in `requirements.txt`. For Unix machines change the permissions of the setup file via `chmod +x setup.sh` first then run the setup, `./setup.sh` which will create a virtual environment and install the packages. After that, whenever you want to use the project, activate the virtual environment by running `source ocean/bin/activate` to activate the virtual environment.
+First pull the repo in some directory you are conformatble working in. Note that the setup file works only for Unix machines, windowsOS users must create a virtual environment and install the libraries in `requirements.txt`. For Unix machines change the permissions of the setup file via `chmod +x setup.sh` first then run the setup, `./setup.sh` which will create a virtual environment and install the packages. After that, whenever you want to use the project, activate the virtual environment by running `source ocean/bin/activate` and to deactivate run `deactivate`.
 
 ## References:
 

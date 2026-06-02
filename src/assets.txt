@@ -1,20 +1,20 @@
 AAPL                                Apple Incorporated
 MSFT                                Microsoft Corporation
-GOOGL                               Alphabet Incorporated
-AMZN                                Amazon.com Incorporated
-META                                Meta Platforms Incorporated
-TSLA                                Tesla IncorporatedSLA
 NVDA                                NVIDIA Corporation
-JPM                                 JPMorgan Chase & Company
-V                                   Visa Incorporated
-CAT                                 Caterpillar Incorporated
-GE                                  GE Aerospace
-UNP                                 Union Pacific Corporation
-HON                                 Honeywell International
-NEE                                 NextEra Energy Incorporated
-TJX                                 TJX Companies Incorporated
-BKNG                                Booking Holdings Incorporated
-CMG                                 Chipotle Mexican Grill
-MAR                                 Marriott International
-BLK                                 BlackRock Incorporated
-AXP                                 American Express Company
+ADBE                                Adobe Incorporated
+AVGO                                Broadcom Incorporated
+AMD                                 Advanced Micro Devices
+CRM                                 Salesforce Incorporated
+CSCO                                Cisco Systems Incorporated
+ORCL                                Oracle Corporation
+QCOM                                Qualcomm Incorporated
+NOW                                 ServiceNow Incorporated
+INTU                                Intuit Incorporated
+IBM                                 IBM Corporation
+AMAT                                Applied Materials Incorporated
+MU                                  Micron Technology Incorporated
+PANW                                Palo Alto Networks Incorporated
+ACN                                 Accenture Plc
+TXN                                 Texas Instruments Incorporated
+LRCX                                Lam Research Corporation
+KLAC                                KLA Corporation

@@ -12,7 +12,7 @@ class CommunityDetection(Qubo):
     """
     creates modularity matrix - m
     """
-    def modularity_matrix(self):
+    def modularity_matrix(self): # note modularity can break if adjacency has negative weights or zero total edge mass
         A = self.adjacency_matrix
         g = A.sum(axis=1)
         m = g.sum() / 2.0
@@ -55,7 +55,7 @@ class CommunityDetection(Qubo):
         return Q
 
     """
-    outputs communities of each asset  
+    decodes solution with one hot encoding  
     """
     def decode_solution(self, x):
         n = self.adjacency_matrix.shape[0]

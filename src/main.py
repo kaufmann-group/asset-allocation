@@ -7,28 +7,22 @@ import networkx as nx
 
 from modules import *
 
-gamma = 8.0
-beta = 1.0
+lambda_3 = 50.0   # penalize risk more
+lambda_1 = 0.2    # reward return less aggressively
 
 def community_asset_allocation(daily_returns, number_communities, solver_type="SIMULATED", adjacency=get_covariance):
-    returns = daily_returns.mean() * 252 # array: (num_assets,), multiply by 252 to annualize
+    returns = daily_returns.mean() * 252 
 
-    covariance_matrix = adjacency(daily_returns=daily_returns) # array: (num_assets, num_assets)
+    covariance_matrix = get_covariance(daily_returns=daily_returns, annualize=True)
 
-    graph = nx.from_numpy_array(covariance_matrix.to_numpy())
-    #draw_graph(graph=graph, name=".graph.png")
+    graph_adjacency = adjacency(daily_returns=daily_returns, zero_diagonal=True)
 
-    community_detection = CommunityDetection(adjacency_matrix=covariance_matrix, number_communities=number_communities)
-    communities = community_detection.run(solver_type=solver_type) # array: (num_assets,)
+    community_detection = CommunityDetection(adjacency_matrix=graph_adjacency, number_communities=number_communities)
+    communities = community_detection.run(solver_type=solver_type)
+    partitions = [set(np.where(communities == c)[0]) for c in np.unique(communities)] 
 
-    partitions = [set(np.where(communities == c)[0]) for c in np.unique(communities)] # array of sets of the partitions
-
-    #draw_graph(graph=graph, name=".graph_with_communities.png", labels=communities)
-
-    group_average_returns = {} # stores the expected return of each community
-
-    # note that group_daily_returns creates a time series of returns for each community
-    group_daily_returns = np.zeros((len(daily_returns), number_communities)) # array: (number of daily_returns, number_communities)
+    group_average_returns = {} 
+    group_daily_returns = np.zeros((len(daily_returns), len(partitions))) 
 
     """
     note this converts each community/partition into a single "asset" by computing its average annual return and
@@ -38,14 +32,14 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         asset_group = list(asset_group)
 
         group_average_returns[group_index] = returns.iloc[asset_group].mean()
-        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy() # annualize
+        group_daily_returns[:, group_index] = daily_returns.iloc[:, asset_group].mean(axis=1).to_numpy()
 
-    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) * 252 # covariance of each partition
+    partition_covariance_matrix = np.cov(group_daily_returns, rowvar=False) * 252 
 
-    upper_returns = np.array(list(group_average_returns.values()))
-    upper_allocation = AssetAllocation(returns=upper_returns, covariance=partition_covariance_matrix, p=upper_returns.mean(), lambda_1=10.0, lambda_2=50.0, lambda_3=10.0)
-    
+    upper_returns = np.array(list(group_average_returns.values())) # note that upper community returns are computed as equal-weight community returns what to do abt this ????
+    upper_allocation = AssetAllocation(returns=upper_returns, covariance=partition_covariance_matrix, lambda_1=lambda_1, lambda_3=lambda_3)
     upper_allocations = upper_allocation.run(solver_type=solver_type)
+
     lower_allocations = []
 
     for _, cluster in enumerate(partitions):
@@ -54,7 +48,7 @@ def community_asset_allocation(daily_returns, number_communities, solver_type="S
         cluster_returns = [returns.iloc[asset] for asset in cluster]
         cluster_covariance = covariance_matrix.iloc[cluster, cluster].to_numpy()
 
-        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance) 
+        inner_allocation = AssetAllocation(returns=cluster_returns, covariance=cluster_covariance, lambda_1=lambda_1, lambda_3=lambda_3) 
         lower_allocations.append(inner_allocation.run(solver_type=solver_type))
 
     allocations = np.zeros(len(returns))

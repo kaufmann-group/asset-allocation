@@ -10,8 +10,8 @@ from main import community_asset_allocation
 
 if __name__ == "__main__":
 
-    number_runs=3
-    number_communities=5
+    number_runs = 10
+    number_communities = 5
 
     with open("benchmarking_assets.txt", "r") as file:
         all_assets = [ticker for line in file if (ticker := line.split("#")[0].split("-")[0].split(" ")[0].strip())]

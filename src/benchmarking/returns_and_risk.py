@@ -64,6 +64,8 @@ if __name__ == "__main__":
     axes[1].plot(*zip(*sharpe_ratios), "r*", label="Sharpe Comparison")
     axes[1].axline((0, 0), (1, 1), color="k", linestyle=":", linewidth=1, transform=axes[1].transAxes)
 
+    axes[1].set_ylim([0, 5])
+    axes[1].set_xlim([0, 5])
     axes[1].set_xlabel("Sharpe Ratio: Community Asset Allocation", fontsize=11)
     axes[1].set_ylabel("Sharpe Ratio: Asset Allocation", fontsize=11)
     axes[1].set_title("Sharpe Ratios Comparison", fontsize=12)
@@ -71,5 +73,5 @@ if __name__ == "__main__":
     axes[1].grid(True, linestyle="--", alpha=0.6)
 
     plt.tight_layout()
-    plt.savefig("../../figures/risk_and_returns_benchmark.png", dpi=300, bbox_inches="tight")
+    plt.savefig("../../figures/risk_and_returns_benchmark.png", dpi=300)
     plt.show()

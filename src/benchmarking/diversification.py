@@ -20,46 +20,62 @@ if __name__ == "__main__":
     benchmarking
     """
 
-    num_assets = np.arange(20, 95, 5)
+    num_assets = np.arange(20, 55, 5)
 
-    aa_diversification = []
-    caa_diversification = []
+    aa_metrics = np.zeros((len(num_assets), 2))
+    caa_metrics = np.zeros((len(num_assets), 2))
 
-    for n in tqdm(num_assets):
-        assets = all_assets[:n]
+    for idx, n in enumerate(tqdm(num_assets, desc="Benchmarking Assets")):
+            assets = all_assets[:n]
 
-        daily_returns = closing_prices(assets=assets)
-        returns = daily_returns.mean() * 252 # returns
+            daily_returns = closing_prices(assets=assets)
+            returns = daily_returns.mean() * 252
+            cov_matrix = get_covariance(daily_returns=daily_returns, annualize=True)
 
-        cov_matrix = get_covariance(daily_returns=daily_returns, annualize=True)
-    
-        aa_diversifications = []
-        caa_diversifications = []
+            run_aa_div, run_aa_hhi = [], []
+            run_caa_div, run_caa_hhi = [], []
 
-        for _ in range(number_runs):
-            caa_weights = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities)
-            caa_diversifications.append([get_diversification_ratio(weights=caa_weights, covariance=cov_matrix), get_hhi(weights=caa_weights)])
+            for _ in range(number_runs):
+                caa_weights = community_asset_allocation(daily_returns=daily_returns, number_communities=number_communities)
+                run_caa_div.append(get_diversification_ratio(weights=caa_weights, covariance=cov_matrix))
+                run_caa_hhi.append(get_hhi(weights=caa_weights))
 
-            aa = AssetAllocation(returns=returns.to_numpy(), covariance=cov_matrix.to_numpy())
-            aa_weights = aa.run(solver_type="SIMULATED")
-            aa_diversifications.append([get_diversification_ratio(weights=aa_weights, covariance=cov_matrix), get_hhi(weights=aa_weights)])
+                aa = AssetAllocation(returns=returns.to_numpy(), covariance=cov_matrix.to_numpy())
+                aa_weights = aa.run(solver_type="SIMULATED")
+                run_aa_div.append(get_diversification_ratio(weights=aa_weights, covariance=cov_matrix))
+                run_aa_hhi.append(get_hhi(weights=aa_weights))
 
-        aa_diversification.append(np.mean(aa_diversifications, axis=0))
-        caa_diversification.append(np.mean(caa_diversifications, axis=0))
+            aa_metrics[idx] = [np.mean(run_aa_div), np.mean(run_aa_hhi)]
+            caa_metrics[idx] = [np.mean(run_caa_div), np.mean(run_caa_hhi)]
 
     """
     plotting
     """
 
-    figure, axis = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5), sharex=True)
+    fig.suptitle("Diversification Metrics", fontsize=14, y=1.00)
 
-    axis[0].plot(num_assets, aa_diversification[:, 0], label="AA diversification ratio")
-    axis[0].plot(num_assets, caa_diversification[:, 0], label="CAA diversification ratio")
+    axes[0].plot( num_assets, aa_metrics[:, 0], label="Classical AA", marker="o", linewidth=2)
+    axes[0].plot( num_assets, caa_metrics[:, 0], label="Community CAA", marker="s", linewidth=2)
+    axes[0].set_title("Diversification Ratio Comparison", fontsize=12, pad=10)
+    axes[0].set_ylabel("Diversification Ratio")
+    axes[0].legend(frameon=True)
+    axes[0].grid(True, linestyle="--", alpha=0.6)
 
-    axis[1].plot(num_assets, aa_diversification[:, 1], label="AA HHI")
-    axis[1].plot(num_assets, caa_diversification[:, 1], label="CAA HHI")
+    axes[1].plot( num_assets, aa_metrics[:, 1], label="Classical AA", marker="o", linewidth=2)
+    axes[1].plot(num_assets, caa_metrics[:, 1], label="Community CAA", marker="s", linewidth=2)
+    axes[1].set_title("Portfolio Concentration (HHI)", fontsize=12, pad=10)
+    axes[1].set_ylabel("HHI Score")
+    axes[1].legend(frameon=True)
+    axes[1].grid(True, linestyle="--", alpha=0.6)
 
+    for ax in axes:
+        ax.set_xlabel("Number of Assets")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+    plt.tight_layout()
+    plt.savefig("../../figures/diversification.png", dpi=300)
     plt.show()
-
 
 

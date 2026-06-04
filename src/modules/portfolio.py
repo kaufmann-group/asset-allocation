@@ -29,7 +29,9 @@ def get_correlation(daily_returns, positive_correlation_communities=False, zero_
     corr = daily_returns.corr().clip(lower=0) if positive_correlation_communities else daily_returns.corr().abs()
 
     if zero_diagonal:
-        np.fill_diagonal(corr.values, 0.0)
+        corr_matrix = corr.values.copy()
+        np.fill_diagonal(corr_matrix, 0.0)
+        corr = corr.__class__(corr_matrix, index=corr.index, columns=corr.columns)
 
     return corr
 

@@ -10,8 +10,8 @@ from main import community_asset_allocation
 
 if __name__ == "__main__":
 
-    number_runs=200
-    number_communities=5
+    number_runs = 250
+    number_communities = 5
 
     assets_dict = parse_assets_file("benchmarking_assets.txt")
     choose = lambda area, n : np.random.choice(assets_dict[area], n, replace=False).tolist()

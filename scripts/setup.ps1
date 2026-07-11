@@ -1,3 +1,4 @@
+# check to see if python is installed! `python --version` if not install as `winget install -e --id Python.Python.3.11`
 # run as `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\setup.ps1`
 
 $ErrorActionPreference = "Stop"

@@ -8,6 +8,11 @@ sys.path.append("..")
 from modules import *
 from main import community_asset_allocation
 
+"""
+test to see which type of adjacency matrix for the community detection 
+graph results in a better allocation. 
+"""
+
 if __name__ == "__main__":
 
     number_runs = 250

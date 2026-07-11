@@ -8,6 +8,11 @@ sys.path.append("..")
 from modules import *
 from main import community_asset_allocation
 
+"""
+test whether the our community based asset allocation algorithm produces a more genuinely 
+diversified portfolio than the classical allocation method as the number of available assets increases.
+"""
+
 if __name__ == "__main__":
 
     number_runs = 10

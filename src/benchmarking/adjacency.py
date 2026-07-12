@@ -1,8 +1,10 @@
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 import sys
+import git_root
 sys.path.append("..")
 
 from modules import *
@@ -59,5 +61,23 @@ if __name__ == "__main__":
     ax.grid(True, linestyle="--", alpha=0.6)
 
     plt.tight_layout()
-    plt.savefig("../../figures/adjacency_benchmark.png", dpi=300, bbox_inches="tight")
+    plt.savefig(f"{git_root.git_root()}/data/adjacency_benchmark.png", dpi=300, bbox_inches="tight")
     plt.show()
+
+    """
+    save adjacency matrix benchmarking data to CSV
+    """
+
+    cov_risk, cov_return = zip(*cov_rar)
+    corr_risk, corr_return = zip(*corr_rar)
+
+    data = {
+        "Run Number": np.arange(1, number_runs + 1),
+        "Covariance Graph Risk": cov_risk,
+        "Covariance Graph Return": cov_return,
+        "Correlation Graph Risk": corr_risk,
+        "Correlation Graph Return": corr_return
+    }
+
+    df = pd.DataFrame(data)
+    df.to_csv(f"{git_root.git_root()}/data/adjacency_benchmark.csv", index=False)

@@ -1,8 +1,10 @@
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 import sys
+import git_root
 sys.path.append("..")
 
 from modules import *
@@ -80,7 +82,20 @@ if __name__ == "__main__":
         ax.spines["right"].set_visible(False)
 
     plt.tight_layout()
-    plt.savefig("../../figures/diversification.png", dpi=300)
+    plt.savefig(f"{git_root.git_root()}/data/diversification_benchmark.png", dpi=300)
     plt.show()
 
+    """
+    save benchmarking data to csv
+    """
 
+    data = {
+        "Number of Assets": num_assets,
+        "Classical Asset Allocation Diversification Ratio": aa_metrics[:, 0],
+        "Classical Asset Allocation HHI": aa_metrics[:, 1],
+        "Community Asset Allocation Diversification Ratio": caa_metrics[:, 0],
+        "Community Asset Allocation HHI": caa_metrics[:, 1]
+    }
+    
+    df = pd.DataFrame(data)
+    df.to_csv(f"{git_root.git_root()}/data/diversification_benchmark.csv", index=False)

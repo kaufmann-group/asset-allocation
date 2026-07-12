@@ -1,8 +1,10 @@
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 import sys
+import git_root
 sys.path.append("..")
 
 from modules import *
@@ -95,5 +97,27 @@ if __name__ == "__main__":
     axes[1].grid(True, linestyle="--", alpha=0.6)
 
     plt.tight_layout()
-    plt.savefig("../../figures/risk_and_returns_benchmark.png", dpi=300)
+    plt.savefig(f"{git_root.git_root()}/data/risk_and_returns_benchmark.png", dpi=300)
     plt.show()
+
+
+    """
+    save simulation run data to csv
+    """
+    # unzip tuple lists into individual arrays
+    caa_risk, caa_return = zip(*caa_rar)
+    aa_risk, aa_return = zip(*aa_rar)
+    caa_sharpe, aa_sharpe = zip(*sharpe_ratios)
+
+    data = {
+        "Run Number": np.arange(1, number_runs + 1),
+        "Community Asset Allocation Risk": caa_risk,
+        "Community Asset Allocation Returns": caa_return,
+        "Community Asset Allocation Sharpe": caa_sharpe,
+        "Classical Asset Allocation Risk": aa_risk,
+        "Classical Asset Allocation Returns": aa_return,
+        "Classical Asset Allocation Sharpe": aa_sharpe
+    }
+
+    df = pd.DataFrame(data)
+    df.to_csv(f"{git_root.git_root()}/data/risk_and_returns_benchmark.csv", index=False)

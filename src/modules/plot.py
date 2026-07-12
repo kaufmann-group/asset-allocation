@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+import git_root
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
 
@@ -100,7 +101,7 @@ def plot_allocations_and_communities(graph, assets, weights, communities):
     ax_graph.set_title("Asset Communities", fontsize=18)
     ax_graph.axis("off")
 
-    plt.savefig("../figures/graph_and_allocations.png", dpi=300)
+    plt.savefig(f"{git_root.git_root()}/data/graph_and_allocations.png", dpi=300)
 
     plt.tight_layout()
     plt.show()

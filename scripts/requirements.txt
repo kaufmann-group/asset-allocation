@@ -9,3 +9,4 @@ dimod
 dwave-ocean-sdk
 python-dotenv
 urllib3<2
+git_root
